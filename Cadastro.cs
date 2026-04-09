@@ -1,41 +1,45 @@
+using System.Linq;
+
 namespace Biblioteca;
 
 public class Cadastro
 {
-
     //Marlon Rodrigues e Vitor Hugo Ribeiro Sá
     private List<Leitor> listaLeitores = new List<Leitor>();
-
-    public void CadastrarLeitor(string nome, string cpf)
+    public void CadastrarLeitor(string nome, string cpf, int idade, string email = "", string telefone = "")
     {
-        bool jaexiste = listaLeitores.Any(l => l.CPF == cpf);
-
-        if (jaexiste)
+        if (listaLeitores.Any(l => l.CPF == cpf))
         {
-            Console.WriteLine("Leito já existente nesse CPF!");
+            Console.WriteLine("CPF já cadastrado!");
+            return;
         }
-        else
+        try
         {
-            Leitor novoLeitor = new Leitor(nome, cpf);
-            listaLeitores.Add(novoLeitor);
-            Console.WriteLine("Leitor cadastrado com sucesso!");
+            Leitor novo = new Leitor(nome, cpf, idade, email, telefone);
+            listaLeitores.Add(novo);
+            Console.WriteLine("Leitor cadastrado!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
     }
+
     public Leitor BuscarCPF(string cpf)
     {
-        var leitor = listaLeitores.Find(l => l.CPF == cpf);
-
-        return leitor;
+        return listaLeitores.FirstOrDefault(l => l.CPF == cpf);
     }
+
     public void ListarLeitores()
     {
         if (listaLeitores.Count == 0)
         {
             Console.WriteLine("Nenhum leitor cadastrado!");
+            return;
         }
-        foreach (var leitor in listaLeitores)
+        foreach (var l in listaLeitores)
         {
-            Console.WriteLine($"Nome: {leitor.Nome} | CPF: {leitor.CPF} | Livros: {leitor.Livros.Count}");
+            Console.WriteLine($"{l.Nome} | CPF: {l.CPF} | Idade: {l.Idade} | Livros: {l.Livros.Count} | Email: {l.Email} | Telefone: {l.Telefone}");
         }
     }
 
@@ -48,8 +52,15 @@ public class Cadastro
             Console.Write($"Novo nome para {leitorencontrado.Nome}: ");
             string novoNome = Console.ReadLine();
 
-            leitorencontrado.Nome = novoNome;
-            Console.WriteLine("Nome alterado com sucesso");
+            try
+            {
+                leitorencontrado.Nome = novoNome;
+                Console.WriteLine("Nome alterado com sucesso");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
         else
         {
@@ -57,7 +68,9 @@ public class Cadastro
         }
     }
 
+
     public void DeletarLeitor(string cpf)
+
     {
         Leitor leitorapagar = BuscarCPF(cpf);
 
@@ -72,15 +85,14 @@ public class Cadastro
         }
     }
 
-    public void AdicionarLivro(string cpf, string titulo, string autor)
+    public void AdicionarLivro(string cpf, Livro livro)
     {
-        Leitor leitor = BuscarCPF(cpf);
+        var leitor = BuscarCPF(cpf);
 
         if (leitor != null)
         {
-            Livro novoLivro = new Livro(titulo, autor);
-            leitor.Livros.Add(novoLivro);
-            Console.WriteLine("Livro adicionado com sucesso!");
+            leitor.AdicionarLivro(livro);
+            Console.WriteLine("Livro adicionado!");
         }
         else
         {
@@ -94,11 +106,11 @@ public class Cadastro
 
         if (leitor != null)
         {
-            var livro = leitor.Livros.Find(l => l.Titulo == titulo);
+            var livro = leitor.Livros.FirstOrDefault(l => l.Titulo == titulo);
 
             if (livro != null)
             {
-                leitor.Livros.Remove(livro);
+                leitor.RemoverLivro(livro);
                 Console.WriteLine("Livro removido!");
             }
             else
@@ -112,26 +124,42 @@ public class Cadastro
         }
     }
 
+
     public void EditarLivro(string cpf, string titulo)
     {
         Leitor leitor = BuscarCPF(cpf);
 
         if (leitor != null)
         {
-            var livro = leitor.Livros.Find(l => l.Titulo == titulo);
+            var livro = leitor.Livros.FirstOrDefault(l => l.Titulo == titulo);
 
             if (livro != null)
             {
-                Console.Write("Novo título: ");
-                string novoTitulo = Console.ReadLine();
+                try
+                {
+                    Console.Write("Novo título: ");
+                    string novoTitulo = Console.ReadLine();
 
-                Console.Write("Novo autor: ");
-                string novoAutor = Console.ReadLine();
+                    Console.Write("Novo autor: ");
+                    string novoAutor = Console.ReadLine();
 
-                livro.Titulo = novoTitulo;
-                livro.Autor = novoAutor;
+                    Console.Write("Nova editora: ");
+                    string novaEditora = Console.ReadLine();
 
-                Console.WriteLine("Livro atualizado!");
+                    Console.Write("Novo gênero: ");
+                    string novoGenero = Console.ReadLine();
+
+                    livro.Titulo = novoTitulo;
+                    livro.Escritor = novoAutor;
+                    livro.Editora = novaEditora;
+                    livro.Genero = novoGenero;
+
+                    Console.WriteLine("Livro atualizado!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
             else
             {
@@ -151,12 +179,13 @@ public class Cadastro
 
         if (origem != null && destino != null)
         {
-            var livro = origem.Livros.Find(l => l.Titulo == titulo);
+            var livro = origem.Livros.FirstOrDefault(l => l.Titulo == titulo);
 
             if (livro != null)
             {
-                origem.Livros.Remove(livro);
-                destino.Livros.Add(livro);
+                origem.RemoverLivro(livro);
+                destino.AdicionarLivro(livro);
+
                 Console.WriteLine("Livro transferido!");
             }
             else

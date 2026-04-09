@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Intrinsics.Arm;
 namespace Biblioteca;
+
 internal class Program
 {
 
@@ -30,11 +31,17 @@ internal class Program
             switch (opcoes)
             {
                 case "1":
-                    Console.Write("Digite o Nome: ");
-                    string nome = Console.ReadLine();
                     Console.Write("Digite o CPF (apenas números): ");
                     string cpf = Console.ReadLine();
-                    sistema.CadastrarLeitor(nome, cpf);
+                    Console.Write("Digite o Nome: ");
+                    string nome = Console.ReadLine();
+                    Console.Write("Digite a Idade: ");
+                    int idade = int.Parse(Console.ReadLine());
+                    Console.Write("Digite o Email: ");
+                    string email = Console.ReadLine();
+                    Console.Write("Digite o Telefone: ");
+                    string telefone = Console.ReadLine();   
+                    sistema.CadastrarLeitor(nome, cpf, idade, email, telefone);
                     Console.Write("Pressione qualquer tecla para continuar...");
                     Console.ReadKey();
                     break;
@@ -84,15 +91,33 @@ internal class Program
                     Console.Write("CPF: ");
                     string cpfLivro = Console.ReadLine();
 
+                    Console.Write("ISBN: ");
+                    string isbn = Console.ReadLine();
+
                     Console.Write("Título: ");
                     string titulo = Console.ReadLine();
 
-                    Console.Write("Autor: ");
-                    string autor = Console.ReadLine();
+                    Console.Write("Subtítulo: ");
+                    string subtitulo = Console.ReadLine();
 
-                    sistema.AdicionarLivro(cpfLivro, titulo, autor);
+                    Console.Write("Escritor: ");
+                    string escritor = Console.ReadLine();
+
+                    Console.Write("Editora: ");
+                    string editora = Console.ReadLine();
+
+                    Console.Write("Gênero: ");
+                    string genero = Console.ReadLine();
+
+                    Console.Write("Ano de Publicação: ");
+                    int anoPublicacao = int.Parse(Console.ReadLine());
+
+                    Livro livro = new Livro(isbn, titulo, subtitulo, escritor, editora, genero, anoPublicacao);
+
+                    sistema.AdicionarLivro(cpfLivro, livro);
                     Console.ReadKey();
                     break;
+
 
                 case "7":
                     Console.Write("CPF do leitor: ");
