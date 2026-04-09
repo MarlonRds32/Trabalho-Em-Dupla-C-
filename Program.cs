@@ -31,8 +31,34 @@ internal class Program
             switch (opcoes)
             {
                 case "1":
-                    Console.Write("Digite o CPF (apenas números): ");
-                    string cpf = Console.ReadLine();
+                    string cpf;
+
+                    while (true)
+                    {
+                        Console.Write("Digite o CPF (apenas números): ");
+                        cpf = Console.ReadLine().Trim();
+
+                        if (string.IsNullOrWhiteSpace(cpf))
+                        {
+                            Console.WriteLine("CPF inválido!");
+                            continue;
+                        }
+
+                        if (cpf.Length != 11)
+                        {
+                            Console.WriteLine("CPF deve ter 11 dígitos!");
+                            continue;
+                        }
+
+                        if (sistema.BuscarCPF(cpf) != null)
+                        {
+                            Console.WriteLine("CPF já cadastrado!");
+                            continue;
+                        }
+
+                        break;
+                    }
+
                     Console.Write("Digite o Nome: ");
                     string nome = Console.ReadLine();
                     Console.Write("Digite a Idade: ");
@@ -40,7 +66,7 @@ internal class Program
                     Console.Write("Digite o Email: ");
                     string email = Console.ReadLine();
                     Console.Write("Digite o Telefone: ");
-                    string telefone = Console.ReadLine();   
+                    string telefone = Console.ReadLine();
                     sistema.CadastrarLeitor(nome, cpf, idade, email, telefone);
                     Console.Write("Pressione qualquer tecla para continuar...");
                     Console.ReadKey();
@@ -115,7 +141,9 @@ internal class Program
                     Livro livro = new Livro(isbn, titulo, subtitulo, escritor, editora, genero, anoPublicacao);
 
                     sistema.AdicionarLivro(cpfLivro, livro);
+                    Console.Write("Pressione qualquer tecla para continuar...");
                     Console.ReadKey();
+                    break;
                     break;
 
 
